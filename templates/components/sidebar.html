@@ -1,0 +1,114 @@
+<div id = "sidebar">
+    <button id = "open-close-button">Close Sidebar</button>
+    <div id = "sidebar-contents">
+        <div id = "message-history">
+            <ul id = "message-list">
+            </ul>
+        </div>
+        <div id = "input-module">
+            <span id = "disclaimer">AI Video Tutor can produce erroneous responses. Please double-check them.</span>
+            <textarea id = "text-input" placeholder = " Send your question here"></textarea>
+            <button id = "send-button">&#10148;</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    #sidebar {
+        border-color:white;
+        color:white;
+        background-color:#0D0D0D;
+        display:flex;
+        flex-direction:column;
+        height:100%;
+    }
+
+    #sidebar-contents {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    button {
+        border-color:white;
+        color:white;
+        background-color:#0D0D0D;
+        justify-self:right;
+    }
+
+    #open-close-button {
+        align-self:flex-end;
+        margin-top:.7rem;
+        margin-right:.5rem;
+    }
+
+    #message-list {
+        list-style-type:none;
+        text-align:right;
+        margin-right:2rem;
+        line-height:1.7;
+    }
+
+    #input-module {
+        margin-top:auto;
+        align-self: center;
+        width:100%;
+        box-sizing:border-box;
+        display:grid;
+        grid-template-columns:1fr auto;
+    }
+
+    #text-input {
+        border-color:white;
+        color:white;
+        background-color:#0D0D0D;
+        width:100%;
+        min-width:0;
+        box-sizing: border-box;
+        resize: none;
+        margin-left:.5rem;
+        margin-bottom:.6rem;
+    }
+
+    #send-button {
+        margin-right:.5rem;
+        margin-bottom:.6rem;
+    }
+
+    #disclaimer {
+        grid-column:1 / -1;
+        text-align:center;
+    }
+
+</style>
+
+<script>
+    document.getElementById("send-button").onclick = function(){
+        const input = document.getElementById("text-input").value;
+        document.getElementById("text-input").value = "";
+        const messageHistory = document.getElementById("message-list")
+        const message = document.createElement("li")
+        const result = `You (${new Date().toLocaleTimeString()}): ${input}`
+        messageHistory.appendChild(message)
+        message.textContent = result
+    }
+
+    document.getElementById("open-close-button").onclick = function(){
+        const sidebar = document.getElementById("sidebar-contents")
+        const sidebarFrame = window.parent.document.getElementById("sidebar")
+        const canvasFrame = window.parent.document.getElementById("canvas")
+        const button = document.getElementById("open-close-button")
+        const buttonWidth = button.offsetWidth;
+        if (sidebar.style.display === "flex"){
+            sidebar.style.display = "none";
+            sidebarFrame.style.width = buttonWidth + "px"
+            canvasFrame.style.width = `calc(100vw - ${buttonWidth}px)`
+            button.innerHTML = "Open Sidebar"
+        } else {
+            sidebar.style.display = "flex";
+            sidebarFrame.style.width = "25vw"
+            canvasFrame.style.width = "75vw"
+            button.innerHTML = "Close Sidebar"
+        }
+    }
+</script>
