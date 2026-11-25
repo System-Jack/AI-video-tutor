@@ -13,4 +13,71 @@
 <script>
     const canvas = document.getElementById("whiteboard")
     const ctx = canvas.getContext("2d")
+
+    canvas.width = canvas.clientWidth
+    canvas.height = canvas.clientHeight
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = 2
+    ctx.lineCap = "round"
+
+    let Xi = 0
+    let Yi = 0
+
+    function movePen(X, Y, speed, pendown = true) {
+
+        if (!Number.isFinite(X) || !Number.isFinite(Y)) {
+            return Promise.reject(new Error("Invalid coordinate(s)"))
+        }
+
+        const dX = X - Xi
+        const dY = Y - Yi
+        const distance = Math.sqrt(dX * dX + dY * dY)
+
+        if (!Number.isFinite(speed) || speed <= 0) {
+            return Promise.reject(new Error("Invalid speed"))
+        } else if (distance <= 0) {
+            return Promise.resolve()
+        }
+
+        const duration = distance / speed
+        const startTime = performance.now()
+
+        const startX = Xi
+        const startY = Yi
+
+        return new Promise(resolve => {
+            function animate() {
+                const elapsedTime = (performance.now() - startTime) / 1000
+                const progress = Math.min(elapsedTime / duration, 1)
+                const newX = startX + dX * progress
+                const newY = startY + dY * progress
+                if (pendown) {
+                    ctx.beginPath()
+                    ctx.moveTo(Xi, Yi)
+                    ctx.lineTo(newX, newY)
+                    ctx.stroke()
+                }
+                Xi = newX
+                Yi = newY
+                if (progress < 1)
+                    requestAnimationFrame(animate)
+                else
+                    resolve()
+            }
+
+            requestAnimationFrame(animate)
+        })
+    }
+
+    async function drawPath(points, speed) {
+        for (let i = 0; i < points.length; i++) {
+            await movePen(points[i][0], points[i][1], speed, i !== 0)
+        }
+    }
+
+    async function executeInstructions(instructions) {
+        for (let i = 0; i < instructions.length; i++) {
+            await drawPath(instructions[i].points, instructions[i].speed)
+        }
+    }
 </script>
