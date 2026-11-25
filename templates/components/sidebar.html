@@ -93,6 +93,19 @@
         const result = `You (${new Date().toLocaleTimeString()}): ${input}`
         messageHistory.appendChild(message)
         message.textContent = result
+        fetch("/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({question: input})
+        })
+            .then(response => response.json())
+            .then(data => {
+                const instructions = JSON.parse(data.answer)
+                console.log(instructions)
+                window.parent.document.getElementById("canvas").contentWindow.executeInstructions(instructions)
+            })
     }
 
     document.getElementById("open-close-button").onclick = function(){
