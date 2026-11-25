@@ -22,6 +22,13 @@
 
     let Xi = 0
     let Yi = 0
+    let characters;
+
+    fetch("characters.json")
+        .then(response => response.json())
+        .then(async data => {
+            characters = data
+        })
 
     function movePen(X, Y, speed, pendown = true) {
 
@@ -78,6 +85,27 @@
     async function executeInstructions(instructions) {
         for (let i = 0; i < instructions.length; i++) {
             await drawPath(instructions[i].points, instructions[i].speed)
+        }
+    }
+
+    async function drawCharacter(character, X, Y, size, speed) {
+        const strokes = characters[character]
+
+        for (let i = 0; i < strokes.length; i++) {
+            let pointsArray = []
+            for (let j = 0; j < strokes[i].length; j++) {
+                const XTemp = X + strokes[i][j][0] * (size / 100)
+                const YTemp = Y + strokes[i][j][1] * (size / 100)
+                pointsArray.push([XTemp, YTemp])
+            }
+            await drawPath(pointsArray, speed)
+        }
+    }
+
+    async function drawText(text, X, Y, size, speed) {
+        for (let i = 0; i < text.length; i++) {
+            await drawCharacter(text[i], X, Y, size, speed)
+            X += size * 0.75
         }
     }
 </script>
